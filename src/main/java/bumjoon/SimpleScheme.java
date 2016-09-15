@@ -21,14 +21,7 @@ public class SimpleScheme implements Scheme {
 	
 	public List<Object> deserialize(byte[] bytes) {
 		LOG.error("bkimtest : deserialize() is invoked. count=" + ++count);
-		/*
-		try {
-			Thread.sleep(1000L);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
+
 		String line = null;
 		try {
 			line = new String(bytes, "UTF-8");

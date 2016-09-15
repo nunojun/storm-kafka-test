@@ -4,13 +4,9 @@ import org.apache.log4j.Logger;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
-import backtype.storm.StormSubmitter;
-import backtype.storm.generated.AlreadyAliveException;
-import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.tuple.Fields;
 import storm.kafka.ZkHosts;
-import storm.kafka.trident.OpaqueTridentKafkaSpout;
 import storm.kafka.trident.TridentKafkaConfig;
 import storm.trident.TridentTopology;
 import storm.trident.testing.CountAsAggregator;
@@ -29,7 +25,7 @@ public class SimpleTopology {
 	private static final int STORM_MAX_SPOUT_PENDING = 1;
 
 	private TridentKafkaConfig tridentKafkaConfig;
-	private OpaqueTridentKafkaSpout opaqueTridentKafkaSpout;
+	private SimpleKafkaSpout simpleKafkaSpout;
 	private Config config;
 	
 	public SimpleTopology() {
@@ -47,7 +43,7 @@ public class SimpleTopology {
 		this.tridentKafkaConfig.bufferSizeBytes = KAFKA_BUFFER_SIZE_BYTES;
 		this.tridentKafkaConfig.forceFromStart = false;
 		
-		this.opaqueTridentKafkaSpout = new OpaqueTridentKafkaSpout(this.tridentKafkaConfig);
+		this.simpleKafkaSpout = new SimpleKafkaSpout(this.tridentKafkaConfig);
 		
 		this.config = new Config();
 		this.config.setNumWorkers(STORM_NUM_WORKERS);
@@ -60,7 +56,7 @@ public class SimpleTopology {
 		LOG.error("bkimtest : execute()");
 		TridentTopology topology = new TridentTopology();
 
-		topology.newStream(KAFKA_INPUT_TOPIC, this.opaqueTridentKafkaSpout).name("kafkaSpout")
+		topology.newStream(KAFKA_INPUT_TOPIC, this.simpleKafkaSpout).name("kafkaSpout")
 		.aggregate(new Fields("A", "B", "C", "D"), new CountAsAggregator(), new Fields("A", "B", "C", "D"));
 		
 		LocalCluster cluster = new LocalCluster();
